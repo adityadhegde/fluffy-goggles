@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  podplayer:
+    build: .
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    devices:
+      - /dev/snd:/dev/snd  # Map host sound devices for audio playback (Linux only)
+    volumes:
+      - ./downloads:/app/downloads
+      - ./podplayer.db:/app/podplayer.db
+      - ./podplayer.log:/app/podplayer.log
+      - ./config.json:/app/config.json
+    environment:
+      - TERM=xterm-256color

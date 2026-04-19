@@ -357,6 +357,11 @@ def main(stdscr: "curses._CursesWindow") -> None:
     tui.run()
 
 
-if __name__ == "__main__":
+def entrypoint() -> None:
+    """Entry point for the command-line script."""
     curses.wrapper(main)
+
+
+if __name__ == "__main__":
+    entrypoint()
 
