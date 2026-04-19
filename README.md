@@ -24,8 +24,8 @@ brew install mpv
 Clone the repository and install it in a virtual environment:
 
 ```bash
-git clone https://github.com/your-username/podplayer.git
-cd podplayer
+git clone https://github.com/adityadhegde/fluffy-goggles.git
+cd fluffy-goggles
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
@@ -36,7 +36,7 @@ podplayer
 If you use [uv](https://github.com/astral-sh/uv), you can run the project directly from the directory without manually managing environments:
 
 ```bash
-git clone https://github.com/your-username/podplayer.git
+git clone https://github.com/adityadhegde/fluffy-goggles.git
 cd podplayer
 uv run podplayer
 ```
@@ -50,7 +50,7 @@ podplayer
 You can run the application containerized. The provided `docker-compose.yml` mounts your local sound devices (`/dev/snd`), which works well out-of-the-box on Linux hosts.
 
 ```bash
-git clone https://github.com/your-username/podplayer.git
+git clone https://github.com/adityadhegde/fluffy-goggles.git
 cd podplayer
 docker compose build
 docker compose run --rm podplayer
