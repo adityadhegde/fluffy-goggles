@@ -1,8 +1,8 @@
 {
-    "sqllite3_path": "podplayer.db",
+    "sqllite3_path": "/home/robin/podplayer.db",
     "seek_step": 10,
     "playback_speed": 1.0,
     "volume": 50.0,
-    "download_directory": "downloads",
+    "download_directory": "/home/robin/downloads",
     "logging": false
 }
