@@ -105,12 +105,16 @@ class PodPlayerTUI:
         if not feeds:
             self.stdscr.addstr(3, 2, "No feeds available. Press 'a' to add a feed.")
             return
-
+        
+        # set feed display_index from 1 to len(feeds)
+        for index, feed in enumerate(feeds):
+            feed["display_index"] = index + 1
+            
         self.stdscr.addstr(3, 2, "Feeds:")
         visible_count = height - 8
         top = max(0, self.selected_feed - visible_count + 1)
         for index, feed in enumerate(feeds[top : top + visible_count]):
-            line = f" {index+1}: {feed['title']}"
+            line = f" {feed['display_index']}: {feed['title']}"
             y = 5 + index
             if top + index == self.selected_feed:
                 self.stdscr.addstr(y, 2, line[: width - 4], curses.A_REVERSE)
@@ -126,6 +130,10 @@ class PodPlayerTUI:
 
         feed = feeds[self.selected_feed]
         episodes = self.app.list_episodes(feed["id"])
+        # set episode display_index from 1 to len(episodes)
+        for index, episode in enumerate(episodes):
+            episode["display_index"] = index + 1
+        
         self.stdscr.addstr(3, 2, f"Feed: {feed['title']}")
         self.stdscr.addstr(4, 2, f"Episodes: {len(episodes)}")
         self.stdscr.addstr(5, 2, "Use arrow keys to select, p=play, d=download, b=back")
@@ -133,7 +141,7 @@ class PodPlayerTUI:
         visible_count = height - 11
         top = max(0, self.selected_episode - visible_count + 1)
         for index, episode in enumerate(episodes[top : top + visible_count]):
-            line = f" {index+1}: {episode['title']}"
+            line = f" {episode['display_index']}: {episode['title']}"
             y = 7 + index
             if top + index == self.selected_episode:
                 self.stdscr.addstr(y, 2, line[: width - 4], curses.A_REVERSE)
