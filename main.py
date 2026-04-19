@@ -11,9 +11,11 @@ import json
 import curses
 import textwrap
 from typing import List
+from pathlib import Path
 
 from app.app import PodPlayerApp
 from logger import get_logger
+from config import APP_DIR
 
 logger = get_logger(__name__)
 
@@ -23,13 +25,27 @@ class PodPlayerTUI:
 
     def __init__(self, stdscr: "curses._CursesWindow"):
         self.stdscr = stdscr
+        
+        config = {}
         try:
-            with open("config.json", "r") as f:
-                config = json.load(f)
-            self.seek_step = config.get("seek_step", 10)
+            config_path = APP_DIR / "config.json"
+            if config_path.exists():
+                with open(config_path, "r") as f:
+                    config = json.load(f)
         except Exception:
-            self.seek_step = 10
-        self.app = PodPlayerApp()
+            pass
+            
+        self.seek_step = config.get("seek_step", 10)
+        
+        db_path = config.get("sqllite3_path", "podplayer.db")
+        if not Path(db_path).is_absolute():
+            db_path = str(APP_DIR / db_path)
+            
+        self.download_dir = config.get("download_directory", "downloads")
+        if not Path(self.download_dir).is_absolute():
+            self.download_dir = str(APP_DIR / self.download_dir)
+            
+        self.app = PodPlayerApp(db_path=db_path)
         self.screen = "feeds"
         self.selected_feed = 0
         self.selected_episode = 0
@@ -230,7 +246,7 @@ class PodPlayerTUI:
                     self.message = "Playing episode."
         elif key == ord("d"):
             if episodes:
-                success = self.app.download_episode(episodes[self.selected_episode]["id"])
+                success = self.app.download_episode(episodes[self.selected_episode]["id"], download_dir=self.download_dir)
                 self.message = "Downloaded metadata saved." if success else "Download failed."
         elif key == ord("b"):
             self.screen = "feeds"
@@ -280,7 +296,7 @@ class PodPlayerTUI:
             elif key == ord("d"):
                 if self.filter_results:
                     ep_id = self.filter_results[self.selected_search_result]["id"]
-                    success = self.app.download_episode(ep_id)
+                    success = self.app.download_episode(ep_id, download_dir=self.download_dir)
                     self.message = "Downloaded metadata saved." if success else "Download failed."
             else:
                 self.default_navigation(key)

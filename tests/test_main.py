@@ -186,7 +186,7 @@ def test_tui_episodes_actions(mock_curses, mock_app, mocker):
     # Test d
     mock_app.download_episode.return_value = True
     tui.handle_key(ord("d"))
-    mock_app.download_episode.assert_called_once_with(1)
+    mock_app.download_episode.assert_called_once_with(1, download_dir=tui.download_dir)
     
     # Test < (seek backward)
     tui.handle_key(ord("<"))

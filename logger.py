@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from config import APP_DIR
 
 _logging_configured = False
 _logging_enabled = False
@@ -11,15 +12,19 @@ def _configure_logging() -> None:
         return
 
     try:
-        with open("config.json", "r") as f:
-            config = json.load(f)
+        config_path = APP_DIR / "config.json"
+        if config_path.exists():
+            with open(config_path, "r") as f:
+                config = json.load(f)
+        else:
+            config = {}
         _logging_enabled = config.get("logging", False)
     except Exception:
         _logging_enabled = False
 
     if _logging_enabled:
         logging.basicConfig(
-            filename="podplayer.log",
+            filename=str(APP_DIR / "podplayer.log"),
             level=logging.DEBUG,
             format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s"
         )
