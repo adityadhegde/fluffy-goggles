@@ -6,6 +6,9 @@ from typing import Iterable
 from sqlalchemy import Engine, ForeignKey, Integer, String, Text, DateTime
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, sessionmaker, joinedload
+from logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class Base(DeclarativeBase):
@@ -107,9 +110,11 @@ class FeedController:
 
     def insert_data(self, feed_url: str, title: str, description: str) -> Feed:
         """Insert a feed record using ORM."""
+        logger.debug(f"Inserting feed into DB: {feed_url}")
         with self.session_factory() as session:
             existing_feed = session.query(Feed).filter_by(feed_url=feed_url).first()
             if existing_feed is not None:
+                logger.warning(f"Feed insertion failed: URL '{feed_url}' already exists.")
                 raise ValueError(f"Feed with URL '{feed_url}' already exists.")
             feed = Feed(feed_url=feed_url, title=title, description=description)
             session.add(feed)
@@ -162,6 +167,7 @@ class EpisodeController:
         duration: int | None = None,
     ) -> Episode:
         """Insert an episode record using ORM."""
+        logger.debug(f"Inserting episode into DB: {title} (Feed ID: {feed_id})")
         with self.session_factory() as session:
             episode = Episode(
                 feed_id=feed_id,

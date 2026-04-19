@@ -3,5 +3,6 @@
     "seek_step": 10,
     "playback_speed": 1.0,
     "volume": 50.0,
-    "download_directory": "downloads"
+    "download_directory": "downloads",
+    "logging": false
 }

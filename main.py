@@ -13,6 +13,9 @@ import textwrap
 from typing import List
 
 from app.app import PodPlayerApp
+from logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class PodPlayerTUI:
@@ -38,6 +41,7 @@ class PodPlayerTUI:
         self.playing_episode_id: int | None = None
 
     def run(self) -> None:
+        logger.info("Initializing TUI and starting application loops.")
         curses.curs_set(0)
         self.stdscr.nodelay(False)
         self.stdscr.keypad(True)
@@ -46,7 +50,9 @@ class PodPlayerTUI:
         while True:
             self.draw()
             key = self.stdscr.getch()
+            logger.debug(f"Key pressed: {key}")
             if key == ord("q"):
+                logger.info("Quit command received. Shutting down application.")
                 self.app.close()
                 break
             self.handle_key(key)
@@ -183,6 +189,7 @@ class PodPlayerTUI:
         elif key in (curses.KEY_UP, ord("k")):
             self.selected_feed = max(0, self.selected_feed - 1)
         elif key in (ord("\n"), curses.KEY_ENTER):
+            logger.info("Transitioning to 'episodes' screen.")
             self.screen = "episodes"
             self.selected_episode = 0
         elif key == ord("a"):
@@ -290,6 +297,7 @@ class PodPlayerTUI:
             self.message = "Failed to add feed."
 
     def handle_search(self) -> None:
+        logger.info("Transitioning to 'search' screen.")
         self.screen = "search"
         self.search_query = ""
         self.filter_results = []

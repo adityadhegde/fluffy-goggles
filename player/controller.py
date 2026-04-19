@@ -13,6 +13,9 @@
 import mpv
 
 from feed_controller.table_controllers import EpisodeController, EpisodeMetadataController
+from logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class PlayerController:
@@ -49,6 +52,7 @@ class PlayerController:
     def _on_mpv_event(self, event: object) -> None:
         """Handle MPV events like end of file."""
         if event.__class__.__name__ == "MpvEventEndFile":
+            logger.debug("MPV End of file event received.")
             if self.current_episode_id:
                 self._update_playback_position()
 
@@ -103,6 +107,7 @@ class PlayerController:
         if metadata and metadata.is_downloaded and metadata.download_path:
             source = metadata.download_path
 
+        logger.info(f"MPV playing from source: {source} (Start position: {start_position})")
         # Play the audio
         self.player.play(source)
 

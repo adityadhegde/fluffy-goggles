@@ -31,6 +31,9 @@ from feed_controller.table_controllers import (
     FeedController,
 )
 from player.controller import PlayerController
+from logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class PodPlayerApp:
@@ -74,10 +77,11 @@ class PodPlayerApp:
     def add_feed(self, feed_url: str) -> bool:
         """Add a new feed by URL. Returns True if successful."""
         try:
+            logger.info(f"Adding feed: {feed_url}")
             self.feed_manager.ingest_feed(feed_url)
             return True
         except Exception as e:
-            print(f"Failed to add feed: {e}")
+            logger.error(f"Failed to add feed {feed_url}: {e}", exc_info=True)
             return False
 
     # 2. List all available feeds
@@ -115,8 +119,10 @@ class PodPlayerApp:
         """Play the selected episode. Returns True if successful."""
         episode = self.episode_controller.get_episode_by_id(episode_id)
         if not episode:
+            logger.warning(f"Episode {episode_id} not found for playback.")
             return False
 
+        logger.info(f"Playing episode {episode_id}: {episode.title}")
         self.player.play(episode_id, episode.audio_url)
         self.playback_history.append(episode_id)
         return True
@@ -253,6 +259,7 @@ class PodPlayerApp:
         if self.auto_refresh_thread and self.auto_refresh_thread.is_alive():
             return
 
+        logger.info("Starting auto-refresh thread.")
         self._auto_refresh_stop_flag = False
         self.auto_refresh_thread = threading.Thread(target=self._auto_refresh_loop)
         self.auto_refresh_thread.daemon = True

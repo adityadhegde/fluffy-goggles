@@ -17,6 +17,9 @@ from feed_controller.table_controllers import (
     FeedController,
     Feed,
 )
+from logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class FeedManager:
@@ -38,17 +41,19 @@ class FeedManager:
 
     def ingest_feed(self, feed_url: str) -> None:
         """Ingest a podcast feed from the specified URL."""
-
+        logger.info(f"Ingesting feed from URL: {feed_url}")
         parsed_feed = feedparser.parse(feed_url)
         title = parsed_feed.feed.get("title", "No Title")
         description = parsed_feed.feed.get("description", "No Description")
 
         try:
             feed = self.feed_controller.insert_data(feed_url, title, description)
+            logger.debug(f"Inserted new feed: {title}")
         except ValueError:
-            print("Feed already exists, retrieving existing feed.")
+            logger.warning(f"Feed already exists, retrieving existing feed for {feed_url}.")
             feed = self.feed_controller.get_by_url(feed_url)
             if feed is None:
+                logger.error(f"Failed to retrieve existing feed with URL '{feed_url}'.")
                 raise ValueError(f"Failed to retrieve existing feed with URL '{feed_url}'.")
 
         for entry in parsed_feed.entries:
@@ -57,11 +62,12 @@ class FeedManager:
 
     def synchronize_feed(self, feed_url: str) -> None:
         """Synchronize the feed data by re-ingesting the feed."""
-
+        logger.info(f"Synchronizing feed: {feed_url}")
         new_parsed_feed = feedparser.parse(feed_url)
         existing_feed = self.feed_controller.get_by_url(feed_url)
 
         if not existing_feed:
+            logger.info("Feed not found during sync, ingesting instead.")
             self.ingest_feed(feed_url)
             return
 
