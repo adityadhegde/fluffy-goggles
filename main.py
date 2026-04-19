@@ -33,15 +33,15 @@ class PodPlayerTUI:
                 with open(config_path, "r") as f:
                     config = json.load(f)
         except Exception:
-            pass
-            
-        self.seek_step = config.get("seek_step", 10)
+            raise Exception(f"Failed to load config file from directory {APP_DIR}")
+                
+        self.seek_step = config.get("seek_step")
         
-        db_path = config.get("sqllite3_path", "podplayer.db")
+        db_path = config.get("sqllite3_path")
         if not Path(db_path).is_absolute():
             db_path = str(APP_DIR / db_path)
             
-        self.download_dir = config.get("download_directory", "downloads")
+        self.download_dir = config.get("download_directory")
         if not Path(self.download_dir).is_absolute():
             self.download_dir = str(APP_DIR / self.download_dir)
             
@@ -110,7 +110,7 @@ class PodPlayerTUI:
         visible_count = height - 8
         top = max(0, self.selected_feed - visible_count + 1)
         for index, feed in enumerate(feeds[top : top + visible_count]):
-            line = f" {feed['id']}: {feed['title']}"
+            line = f" {index+1}: {feed['title']}"
             y = 5 + index
             if top + index == self.selected_feed:
                 self.stdscr.addstr(y, 2, line[: width - 4], curses.A_REVERSE)
@@ -133,7 +133,7 @@ class PodPlayerTUI:
         visible_count = height - 11
         top = max(0, self.selected_episode - visible_count + 1)
         for index, episode in enumerate(episodes[top : top + visible_count]):
-            line = f" {episode['id']}: {episode['title']}"
+            line = f" {index+1}: {episode['title']}"
             y = 7 + index
             if top + index == self.selected_episode:
                 self.stdscr.addstr(y, 2, line[: width - 4], curses.A_REVERSE)

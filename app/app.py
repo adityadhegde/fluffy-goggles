@@ -88,6 +88,7 @@ class PodPlayerApp:
     def list_feeds(self) -> List[dict]:
         """Return a list of all feeds with their details."""
         feeds = self.feed_manager.get_feeds()
+        sorted_feeds = sorted(feeds, key=lambda x: x.title)
         return [
             {
                 "id": feed.id,
@@ -95,13 +96,14 @@ class PodPlayerApp:
                 "description": feed.description,
                 "url": feed.feed_url,
             }
-            for feed in feeds
+            for feed in sorted_feeds
         ]
 
     # 3. List all episodes for a selected feed
-    def list_episodes(self, feed_id: int) -> List[dict]:
+    def list_episodes(self, feed_id: int) -> List[dict]:    
         """Return a list of episodes for the given feed ID."""
         episodes = self.episode_controller.get_episodes_by_feed_id(feed_id)
+        sorted_episodes = sorted(episodes, key=lambda x: x.publish_date, reverse=True)
         return [
             {
                 "id": episode.id,
@@ -111,7 +113,7 @@ class PodPlayerApp:
                 "duration": episode.duration,
                 "publish_date": episode.publish_date,
             }
-            for episode in episodes
+            for episode in sorted_episodes
         ]
 
     # 4. Play an episode by selecting it from the list
