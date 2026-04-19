@@ -375,6 +375,19 @@ def main(stdscr: "curses._CursesWindow") -> None:
 
 def entrypoint() -> None:
     """Entry point for the command-line script."""
+    import os
+    import sys
+    from config import APP_DIR
+    
+    # Redirect C-level stderr to the log file to prevent ALSA/PipeWire warnings 
+    # from directly writing to the terminal and corrupting the curses TUI.
+    try:
+        log_path = APP_DIR / "podplayer.log"
+        fd = os.open(log_path, os.O_WRONLY | os.O_CREAT | os.O_APPEND)
+        os.dup2(fd, sys.stderr.fileno())
+    except Exception:
+        pass
+
     curses.wrapper(main)
 
 
